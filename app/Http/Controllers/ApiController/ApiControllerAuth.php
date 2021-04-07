@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\ApiController;
 
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
@@ -19,6 +19,7 @@ class ApiControllerAuth extends Controller
     public function signin(Request $request)
     {
 
+        try {
             $request->validate([
                 'username' =>'required',
                 'password' => 'required'
@@ -29,9 +30,9 @@ class ApiControllerAuth extends Controller
             if (!Auth::attempt($credentials)) {
                 return ResponseFormatter::error(
                     ['message' =>
-                    'Unauthorized'],
-                    'Authentication failed',
-                    500
+                    'Wrong Username Or Password'],
+                    'Wrong Username Or Password',
+                    401
                 );
             }
 
@@ -48,6 +49,20 @@ class ApiControllerAuth extends Controller
                     'user' => $user
                 ], 'Authenticated');
             }
+        } catch (Exception $exception) {
+            return ResponseFormatter::error(
+                [
+                    'message' =>
+                    $exception->getMessage(),
+                    'error' => $exception
+                ],
+                $exception->getMessage(),
+                $exception->status
+            );
+        }
+
+
+          
         
     }
 }

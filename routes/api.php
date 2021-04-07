@@ -1,17 +1,31 @@
 <?php
 
-use App\Http\Controllers\Api\ApiControllerAuth;
+use App\Http\Controllers\ApiController\ApiControllerAuth;
+use App\Http\Controllers\ApiController\ApiControllerDosen;
+use App\Http\Controllers\ApiController\ApiControllerMahasiswa;
+use App\Http\Controllers\ApiController\ApiControllerInformasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+use Illuminate\Support\Facades\Storage;
 
 
 Route::group(['prefix' => 'v1'], function () {
-    Route::get('/user',[ApiControllerAuth::class,'allUser']);
+    
     Route::post('/user/signin', [ApiControllerAuth::class, 'signin']);
+
+    Route::get('imagepath',function(){
+        return Storage::url("dosen/default.jpg");
+    });
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::resource('dosen', ApiControllerDosen::class);
+        Route::resource('mahasiswa', ApiControllerMahasiswa::class);
+        Route::resource('informasi', ApiControllerInformasi::class);
+    });
+ 
+    
+    
+    
+  
+
 });
+
