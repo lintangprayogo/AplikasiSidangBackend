@@ -21,6 +21,7 @@ class mahasiswa extends Model
         'mhs_email',
         'status',
         'username',
+        'user_id'
         ];
 
   

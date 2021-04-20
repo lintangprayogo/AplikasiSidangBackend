@@ -124,6 +124,17 @@ class ApiControllerInformasi extends Controller
             $judul = $request->informasi_judul;
             $isi = $request->informasi_isi;
             $informasi = informasi::find($id);
+
+            if(!$informasi){
+                return ResponseFormatter::error(
+                    [
+                        'message' =>"Data Not Found",
+                        'error' => "Data Mahasiswa Tidak Ada"
+                    ],
+                    "data not found",
+                    $exception->status,
+                );
+            }
             $informasi->informasi_judul = $judul;
             $informasi->informasi_isi = $isi;
             
@@ -143,6 +154,10 @@ class ApiControllerInformasi extends Controller
              
            
          }catch (Exception $exception) {
+
+            if(!$exception->status){
+                $exception->status=500;
+            }
             return ResponseFormatter::error(
                 [
                     'message' =>$exception->getMessage(),
@@ -173,11 +188,11 @@ class ApiControllerInformasi extends Controller
             ];  
             return response()->json($response, 404);
         } else {
-            $response = [
-                "msg" => "Berhasil menghapus data",
-                "success" => true
-            ];  
-            return response()->json($response, 201);
+            return ResponseFormatter::success(
+                $informasi,
+                "Data Successfully Removed"
+            );
+             
         }
 
     }

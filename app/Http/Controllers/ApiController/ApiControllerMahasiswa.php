@@ -7,6 +7,7 @@ use App\Models\mahasiswa;
 use App\Models\user;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ResponseFormatter;
+use Illuminate\Support\Facades\Hash;
 
 class ApiControllerMahasiswa extends Controller
 {
@@ -15,7 +16,7 @@ class ApiControllerMahasiswa extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+     function index()
     {
         $response = DB::table('mahasiswa')
         ->get();
@@ -35,192 +36,165 @@ class ApiControllerMahasiswa extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+  
     public function store(Request $request)
     {
+        try{
+
+            $status_user        = "mahasiswa";
+            $status_mahasiswa   = "aktif";
+            $foto_default       = "default-mahasiswa.jpg";
+    
+            $this->validate($request, [
+                'mhs_nim' => 'required|unique:mahasiswa',
+                'mhs_nama' => 'required'
+            ]);
+    
         
-        $status_user        = "mahasiswa";
-        $status_mahasiswa   = "aktif";
-        $foto_default       = "default-mahasiswa.jpg";
-
-        $this->validate($request, [
-            'mhs_nim' => 'required',
-            'mhs_nama' => 'required'
-        ]);
-
-        $exist = user::find($request->mhs_nim);
-        if($exist){
-            $response = "NIM mahasiswa sudah ada";
-            return response()->json($response, 404);
-        }else {
-
             $user = new user();
             $mahasiswa = new mahasiswa();
-
-            $user->username = $request->mhs_nim;
-            $user->password = bcrypt($request->mhs_nim);
+            $user->username = Str::slug($request->mhs_nama);
+            $user->password = Hash::make($request->mhs_nim);
             $user->pengguna = $status_user;
-
+    
             $angkatan = '20'. substr($request->mhs_nim, 4,2);
-
+    
             $mahasiswa->mhs_nim     = $request->mhs_nim;
             $mahasiswa->mhs_nama    = $request->mhs_nama;
             $mahasiswa->angkatan    = $angkatan;
             $mahasiswa->mhs_foto    = $foto_default;
             $mahasiswa->status      = $status_mahasiswa;
-            $mahasiswa->username    = $request->mhs_nim;
+           
 
-            if (!$user->save()) {
-                $response = "Sesuatu eror terjadi"; 
-                $showUser = 'Gagal menyimpan user';
-                return response()->json($response, 404); 
-            } else {
-                $showUser = "berhasil menambahkan data user mahasiswa";
+           
+                
+
+
+             if (!$user->save()) {
+                    return ResponseFormatter::error(
+                        [
+                            'message' =>"Something  Error Happen",
+                            'error' => []
+                        ],
+                        "Something  Error Happen",
+                        500,
+                    );
+                
+                } 
+                $mahasiswa->user_id    = $user->id;
+
+                if (!$mahasiswa->save()) {
+                    return ResponseFormatter::error(
+                        [
+                            'message' =>"Something  Error Happen",
+                            'error' => []
+                        ],
+                        "Something  Error Happen",
+                        500,
+                    );
+                }else{
+                    $mahasiswa->mhs_nim=$request->mhs_nim;
+                    return ResponseFormatter::success(
+                        $mahasiswa,
+                        "Data Successfully Added"
+                    );
+                }
+    
+               
+               
+               
+        }catch (Exception $exception) {
+            if(!$exception->status){
+                $exception->status=500;
             }
-
-            if (!$mahasiswa->save()) {
-                $response = "Sesuatu eror terjadi";
-                $showMahasiswa = "Gagal menyimpan dosen";  
-                return response()->json($response, 404); 
-            } else {
-                $showMahasiswa = "berhasil menambahkan data mahasiswa";
-            }
-
-            $response = [
-                'user'      => $showUser,
-                'mahasiswa' => $showMahasiswa
-            ];
-
-            return response()->json($response, 201);;
-
+            return ResponseFormatter::error(
+                [
+                    'message' =>$exception->getMessage(),
+                    'error' => $exception
+                ],
+                $exception->getMessage(),
+                $exception->status,
+            );
         }
+
+       
+
+        
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
 
-        $response = mahasiswa::find($id)
-        ->leftjoin('judul', 'judul.judul_id', '=', 'mahasiswa.judul_id')
-        ->where('mhs_nim', $id)
-        ->first();
-        return response()->json($response, 200);
-
-        // $response = mahasiswa::find($id);
-        // return response()->json($response, 200);
+        
+        return "show";
 
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function edit($id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function update(Request $request, $id)
     {
+        try{
+            $this->validate($request, [
+                'mhs_nim' => 'unique:mahasiswa,mhs_nim,'. $id.',mhs_nim',
+                'mhs_email' =>'unique:mahasiswa,mhs_email,'. $id.',mhs_nim',
+            ]);
+            
+            $mahasiswa = mahasiswa::find($id);
+            if($mahasiswa){
+                $mahasiswa->update($request->all());
+                return ResponseFormatter::success(
+                    $mahasiswa,
+                    "Data Successfully Updated"
+                );
+             }
+            }catch (Exception $exception) {
 
-        $user = user::find($id);
-        $mahasiswa = mahasiswa::find($id);
-
-        $nim = $request->mhs_nim;
-
-        if (!empty($nim)){
-            $user->username         = $request->mhs_nim;
-            $mahasiswa->mhs_nim     = $request->mhs_nim;
-
-            if (!$user->save()) {
-                $response = "Sesuatu eror terjadi"; 
-                $showUser = 'Gagal merubah user';
-                return response()->json($response, 404); 
-            } else {
-                $showUser = "berhasil merubah data user mahasiswa";
-            }
-
-        } else {
-            $showUser = "tidak merubah user mahasiswa";
+                if(!$exception->status){
+                    $exception->status=500;
+                }
+                return ResponseFormatter::error(
+                    [
+                        'message' =>$exception->getMessage(),
+                        'error' => $exception
+                    ],
+                    $exception->getMessage(),
+                    $exception->status,
+                );
+             }
         }
-
-
-        $mahasiswa->mhs_nama    = $request->mhs_nama;
-        $mahasiswa->angkatan    = $request->mhs_angkatan;
-        $mahasiswa->mhs_kontak  = $request->mhs_kontak;
-        $mahasiswa->mhs_email   = $request->mhs_email;
-
-        if (!$mahasiswa->save()) {
-            $response = "Sesuatu eror terjadi";
-            $showMahasiswa = "Gagal merubah dosen";  
-            return response()->json($response, 404); 
-        } else {
-            $showMahasiswa = "berhasil merubah data mahasiswa";
-        }
-
-        $response = [
-            'user'      => $showUser,
-            'mahasiswa' => $showMahasiswa
-        ];
-
-        return response()->json($response, 201);
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+      
+       
+    
     public function destroy($id)
     {
         
-        $user = user::find($id);
+       
         $mahasiswa = mahasiswa::find($id);
-        
-        if (!$user->delete()) {
-            $response = "Sesuatu eror terjadi"; 
-            $showUser = 'Gagal menyimpan user';
-            return response()->json($response, 404); 
-        } else {
-            $showUser = "berhasil menghapus data user mahasiswa";
-        }
-
-        if (!$mahasiswa->delete()) {
-            $response = "Sesuatu eror terjadi";
-            $showMahasiswa = "Gagal menyimpan dosen";  
-            return response()->json($response, 404); 
-        } else {
-            $showMahasiswa = "berhasil menghapus data mahasiswa";
-        }
-
-        $response = [
-            'user'      => $showUser,
-            'mahasiswa' => $showMahasiswa
-        ];
-
-        return response()->json($response, 201);;
+        $user = user::find($mahasiswa->user_id);
+        if($mahasiswa->delete()){  
+            if($user->delete()){
+                   return ResponseFormatter::success(
+                       $mahasiswa,
+                       "Data Successfully Removed"
+                   );
+               }
+           }
+   
+           return ResponseFormatter::error(
+               [
+                   'message' =>"Failed To Remove Data",
+                   'error' =>[]
+               ],
+               "Failed To Remove Data",
+               500,
+           );
 
     }
 
@@ -253,3 +227,5 @@ class ApiControllerMahasiswa extends Controller
     }
 
 }
+
+

@@ -7,7 +7,7 @@ use App\Models\dosen;
 use App\Models\user;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ResponseFormatter;
-
+use Illuminate\Support\Facades\Hash;
 class ApiControllerDosen extends Controller
 {
     /**
@@ -43,57 +43,76 @@ class ApiControllerDosen extends Controller
      */
     public function store(Request $request)
     {
-    
+       try{
         $status_user = "dosen";
         $foto_default = "default-dosen.jpg";
 
-        $exist=user::find($request->dsn_nip);
-        if($exist){
-            $response = "NIP dosen sudah ada";
-            return response()->json($response, 404);
-        } else {
-            $this->validate($request, [
-                'dsn_nip' => 'required',  
-                'dsn_nama' => 'required', 
-                'dsn_kode' => 'required',
-            ]);
+    
+          $this->validate($request, [
+              'dsn_nip' => 'required|unique:dosen',  
+              'dsn_nama' => 'required', 
+              'dsn_kode' => 'required|unique:dosen',
+          ]);
 
-            $user = new user();
-            $dosen = new dosen();
+          $user = new user();
+          $dosen = new dosen();
 
-            $user->username = $request->dsn_nip;
-            $user->password = bcrypt($request->dsn_nip);
-            $user->pengguna = $status_user;
+          $user->username = $request->dsn_nip;
+          $user->password = Hash::make($request->dsn_nip);
+          $user->pengguna = $status_user;
 
-            $dosen->dsn_nip     = $request->dsn_nip;
-            $dosen->dsn_nama    = $request->dsn_nama;
-            $dosen->dsn_kode    = $request->dsn_kode;
-            $dosen->dsn_foto    = $foto_default;
-            $dosen->username    = $request->dsn_nip;
-            
-            if (!$user->save()) {
-                $response = "Sesuatu eror terjadi"; 
-                $showUser = 'Gagal menyimpan user';
-                return response()->json($response, 404); 
-            } else {
-                $showUser = "Berhasil menyimpan data user dosen";
+          
+          if (!$user->save()) {
+          return ResponseFormatter::error(
+                  [
+                      'message' =>"Something  Error Happen",
+                      'error' => []
+                  ],
+                  "Something  Error Happen",
+                  500,
+              );
+          }
+          
+          $dosen->dsn_nip     = $request->dsn_nip;
+          $dosen->dsn_nama    = $request->dsn_nama;
+          $dosen->dsn_kode    = $request->dsn_kode;
+          $dosen->dsn_foto    = $foto_default; 
+          $dosen->user_id   = $user->id;
+
+          if (!$dosen->save()) {
+              return ResponseFormatter::error(
+                  [
+                      'message' =>"Something  Error Happen",
+                      'error' => []
+                  ],
+                  "Something  Error Happen",
+                  500,
+              );
+          } else {
+              $dosen->dsn_nip=$request->dsn_nip;
+              return ResponseFormatter::success(
+                  $dosen,
+                  "Data Successfully Added"
+              );
+  
+          }
+        }catch (Exception $exception) {
+            if(!$exception->status){
+                $exception->status=500;
             }
+            return ResponseFormatter::error(
+                [
+                    'message' =>$exception->getMessage(),
+                    'error' => $exception
+                ],
+                $exception->getMessage(),
+                $exception->status,
+            );
+        } 
 
-            if (!$dosen->save()) {
-                $response = "Sesuatu eror terjadi";
-                $showDosen = "Gagal menyimpan dosen";  
-                return response()->json($response, 404); 
-            } else {
-                $showDosen = "Berhasil menyimpan data dosen";
-            }
-
-            $response = [
-                'user'      => $showUser,
-                'dosen'     => $showDosen
-            ];
-            return response()->json($response, 201);
-
-        }
+           
+        
+        
 
     }
 
@@ -137,25 +156,25 @@ class ApiControllerDosen extends Controller
     public function update(Request $request, $id)
     {
         
-        $user = user::find($id);
+       
         $dosen = dosen::find($id);
+        $user = user::find($dosen->user_id);
 
         $nip = $request->dsn_nip;
 
         if (!empty($nip)) {
             $user->username = $nip;
             $dosen->dsn_nip = $nip;
-            
             if (!$user->save()) {
-                $response = "Sesuatu eror terjadi"; 
-                $showUser = 'Gagal merubah user';
-                return response()->json($response, 404); 
-            } else {
-                $showUser = "Berhasil merubah data user dosen";
-            }
-        
-        } else {
-            $showUser = "tidak merubah user dosen";
+                return ResponseFormatter::error(
+                    [
+                        'message' =>"Something  Error Happen",
+                        'error' => []
+                    ],
+                    "Something  Error Happen",
+                    500,
+                );
+            } 
         }
 
         $dosen->dsn_nama    = $request->dsn_nama;
@@ -163,22 +182,25 @@ class ApiControllerDosen extends Controller
         $dosen->dsn_kontak  = $request->dsn_kontak;
         $dosen->dsn_email   = $request->dsn_email;
         $dosen->batas_bimbingan = $request->batas_bimbingan;
-        $dosen->batas_reviewer = $request->batas_reviewer;
-
+    
 
         if (!$dosen->save()) {
-            $response = "Sesuatu eror terjadi";
-            $showDosen = "Gagal merubah dosen";  
-            return response()->json($response, 404); 
-        } else {
-            $showDosen = "Berhasil merubah data dosen";
+            return ResponseFormatter::error(
+                [
+                    'message' =>"Something  Error Happen",
+                    'error' => []
+                ],
+                "Something  Error Happen",
+                500,
+            );
+        } else { 
+            return ResponseFormatter::success(
+                $dosen,
+                "Data Successfully Added"
+            );
         }
 
-        $response = [
-            'user'      => $showUser,
-            'dosen'     => $showDosen
-        ];
-        return response()->json($response, 201);
+   
 
     }
 
@@ -191,31 +213,30 @@ class ApiControllerDosen extends Controller
     public function destroy($id)
     {
         
-        $user = user::find($id);
+      
         $dosen = dosen::find($id);
+       
+        $user = user::find($dosen->user_id);
         
-        if (!$user->delete()) {
-            $response = "Sesuatu eror terjadi"; 
-            $showUser = 'Gagal menyimpan user';
-            return response()->json($response, 404); 
-        } else {
-            $showUser = "berhasil menghapus data user dosen";
+        if($dosen->delete()){  
+         if( $user->delete()){
+                return ResponseFormatter::success(
+                    $dosen,
+                    "Data Successfully Removed"
+                );
+            }
         }
 
-        if (!$dosen->delete()) {
-            $response = "Sesuatu eror terjadi";
-            $showDosen = "Gagal menyimpan dosen";  
-            return response()->json($response, 404); 
-        } else {
-            $showDosen = "berhasil menghapus data dosen";
-        }
-
-        $response = [
-            'user'      => $showUser,
-            'dosen'     => $showDosen
-        ];
-
-        return response()->json($response, 201);;
+        return ResponseFormatter::error(
+            [
+                'message' =>"Failed To Remove Data",
+                'error' =>[]
+            ],
+            "Failed To Remove Data",
+            500,
+        );
+       
+       
 
 
     }
