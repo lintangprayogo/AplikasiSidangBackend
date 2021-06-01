@@ -8,6 +8,8 @@ use App\Models\user;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\Hash;
+use Exception;
+use Illuminate\Support\Str;
 
 class ApiControllerMahasiswa extends Controller
 {

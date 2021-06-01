@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\dosen;
+use App\Models\Dosen;
 use App\Models\user;
-use Illuminate\Support\Facades\DB;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\Hash;
+use Exception;
 class ApiControllerDosen extends Controller
 {
     /**
@@ -18,7 +18,7 @@ class ApiControllerDosen extends Controller
     public function index()
     {
        
-        $response = dosen::all();
+        $response = Dosen::all();
          return ResponseFormatter::success(
             $response,
             "Data Successfully Retrived"
@@ -44,18 +44,18 @@ class ApiControllerDosen extends Controller
     public function store(Request $request)
     {
        try{
-        $status_user = "dosen";
-        $foto_default = "default-dosen.jpg";
+        $status_user = "Dosen";
+        $foto_default = "default-Dosen.jpg";
 
     
           $this->validate($request, [
-              'dsn_nip' => 'required|unique:dosen',  
+              'dsn_nip' => 'required|unique:Dosen',  
               'dsn_nama' => 'required', 
-              'dsn_kode' => 'required|unique:dosen',
+              'dsn_kode' => 'required|unique:Dosen',
           ]);
 
           $user = new user();
-          $dosen = new dosen();
+          $dosen = new Dosen();
 
           $user->username = $request->dsn_nip;
           $user->password = Hash::make($request->dsn_nip);
@@ -125,12 +125,12 @@ class ApiControllerDosen extends Controller
     public function show($id)
     {
 
-        // $response = DB::table('dosen')
+        // $response = DB::table('Dosen')
         // ->join('user', 'user.username', '=', 'user.username')
         // ->where('dsn_nip', $id)
         // ->get();
         
-        $response = dosen::find($id);
+        $response = Dosen::find($id);
         return response()->json($response, 201);
 
     }
@@ -157,7 +157,7 @@ class ApiControllerDosen extends Controller
     {
         
        
-        $dosen = dosen::find($id);
+        $dosen = Dosen::find($id);
         $user = user::find($dosen->user_id);
 
         $nip = $request->dsn_nip;
@@ -185,6 +185,7 @@ class ApiControllerDosen extends Controller
     
 
         if (!$dosen->save()) {
+            
             return ResponseFormatter::error(
                 [
                     'message' =>"Something  Error Happen",
@@ -246,7 +247,7 @@ class ApiControllerDosen extends Controller
     {
         
         $user = user::find($id);
-        $dosen = dosen::find($id);
+        $dosen = Dosen::find($id);
 
         $nip = $request->dsn_nip;
 
@@ -259,11 +260,11 @@ class ApiControllerDosen extends Controller
                 $showUser = 'Gagal merubah user';
                 return response()->json($response, 404); 
             } else {
-                $showUser = "Berhasil merubah data user dosen";
+                $showUser = "Berhasil merubah data user Dosen";
             }
         
         } else {
-            $showUser = "tidak merubah user dosen";
+            $showUser = "tidak merubah user Dosen";
         }
 
         $dosen->dsn_nama    = $request->dsn_nama;
@@ -274,15 +275,15 @@ class ApiControllerDosen extends Controller
 
         if (!$dosen->save()) {
             $response = "Sesuatu eror terjadi";
-            $showDosen = "Gagal merubah dosen";  
+            $showDosen = "Gagal merubah Dosen";  
             return response()->json($response, 404); 
         } else {
-            $showDosen = "Berhasil merubah data dosen";
+            $showDosen = "Berhasil merubah data Dosen";
         }
 
         $response = [
             'user'      => $showUser,
-            'dosen'     => $showDosen
+            'Dosen'     => $showDosen
         ];
         return response()->json($response, 201);
 

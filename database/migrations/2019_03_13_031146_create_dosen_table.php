@@ -16,9 +16,9 @@ class CreateDosenTable extends Migration
         Schema::create('dosen', function (Blueprint $table) {
             $table->string('dsn_nip', 15)->primary();
             $table->string('dsn_nama', 64);
-            $table->string('dsn_kode', 4);
+            $table->string('dsn_kode', 3)->unique();
             $table->string('dsn_kontak', 12)->nullable()->unique();
-            $table->text('dsn_foto');
+            $table->text('dsn_foto')->nullable();
             $table->tinyInteger('batas_bimbingan')->default(5);
             $table->tinyInteger('batas_penguji')->default(5);
             $table->string('dsn_email', 64)->nullable()->unique();

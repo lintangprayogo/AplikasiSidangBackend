@@ -5,7 +5,7 @@ use App\Models\Judul;
 
 use Illuminate\Database\Eloquent\Model;
 
-class mahasiswa extends Model
+class Mahasiswa extends Model
 {
     protected $table = "mahasiswa";
     public $timestamps = false;
@@ -24,7 +24,6 @@ class mahasiswa extends Model
         'user_id'
         ];
 
-  
 
     public function tbl_user()
     {

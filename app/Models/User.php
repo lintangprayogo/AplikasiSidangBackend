@@ -27,6 +27,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'mhs_foto'
     ];
 
     /**
@@ -58,4 +59,17 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+  
+
+    public function dosen()
+    {
+        return $this->hasOne('App\Models\dosen','user_id');
+    }
+
+    public function mahasiswa()
+    {
+        return $this->hasOne('App\Models\mahasiswa','user_id');
+    }
+
 }

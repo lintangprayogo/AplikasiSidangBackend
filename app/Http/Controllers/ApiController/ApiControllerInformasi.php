@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\informasi;
+use App\Models\Informasi;
 use App\Helpers\ResponseFormatter;
 use Exception;
 class ApiControllerInformasi extends Controller
@@ -16,7 +16,7 @@ class ApiControllerInformasi extends Controller
     public function index()
     {
 
-        $response = informasi::orderby('informasi_id','desc')->get();
+        $response = Informasi::orderby('informasi_id','desc')->get();
         return ResponseFormatter::success(
             $response,
             "Data Successfully Retrived"
@@ -55,7 +55,7 @@ class ApiControllerInformasi extends Controller
         $isi = $request->informasi_isi;
         $penerbit = $request->penerbit;
 
-        $informasi = new informasi();
+        $informasi = new Informasi();
         $informasi->informasi_judul = $judul;
         $informasi->informasi_isi = $isi;
         $informasi->penerbit = $penerbit;
@@ -68,6 +68,9 @@ class ApiControllerInformasi extends Controller
          
        
      }catch (Exception $exception) {
+        if(!$exception->status){
+            $exception->status=500;
+        }
         return ResponseFormatter::error(
             [
                 'message' =>$exception->getMessage(),
@@ -89,7 +92,7 @@ class ApiControllerInformasi extends Controller
      */
     public function show($id)
     {
-        $response = informasi::find($id);
+        $response = Informasi::find($id);
         return response()->json($response, 201);
     }
 
@@ -123,16 +126,16 @@ class ApiControllerInformasi extends Controller
     
             $judul = $request->informasi_judul;
             $isi = $request->informasi_isi;
-            $informasi = informasi::find($id);
+            $informasi = Informasi::find($id);
 
             if(!$informasi){
                 return ResponseFormatter::error(
                     [
                         'message' =>"Data Not Found",
-                        'error' => "Data Mahasiswa Tidak Ada"
+                        'error' => "Data Informasi Tidak Ada"
                     ],
                     "data not found",
-                    $exception->status,
+                    404,
                 );
             }
             $informasi->informasi_judul = $judul;
@@ -179,9 +182,9 @@ class ApiControllerInformasi extends Controller
      */
     public function destroy($id)
     {
-        $informasi = informasi::find($id);
+        $Informasi = Informasi::find($id);
         
-        if (!$informasi->delete()) {
+        if (!$Informasi->delete()) {
             $response = [
                 "msg" => "Sesuatu eror terjadi",
                 "success" => false
@@ -189,7 +192,7 @@ class ApiControllerInformasi extends Controller
             return response()->json($response, 404);
         } else {
             return ResponseFormatter::success(
-                $informasi,
+                $Informasi,
                 "Data Successfully Removed"
             );
              

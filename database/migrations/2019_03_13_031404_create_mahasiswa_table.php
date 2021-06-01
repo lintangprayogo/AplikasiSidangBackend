@@ -18,7 +18,7 @@ class CreateMahasiswaTable extends Migration
             $table->string('mhs_nama', 64);
             $table->string('angkatan', 4);
             $table->string('mhs_kontak', 12)->nullable()->unique();
-            $table->text('mhs_foto');
+            $table->text('mhs_foto')->nullable();
             $table->string('mhs_email', 64)->nullable()->unique();
             $table->string('status', 10)->nullable();
             $table->unsignedBigInteger('user_id');

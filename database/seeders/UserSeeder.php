@@ -21,13 +21,14 @@ class UserSeeder extends Seeder
          
          //Mahasiswa
          for($i=0; $i<=5; $i++){
-            $user=User::create(["username" => $faker->userName, "password" => Hash::make("12345678"),"pengguna"=>"mahasiswa"]);
+            $nim=intval("130119".rand(0,9999));
+            $user=User::create(["username" => $nim, "password" => Hash::make("12345678"),"pengguna"=>"mahasiswa"]);
             $name=$faker->name;
             Mahasiswa::create([
-               'mhs_nim'=>intval("130119".rand(0,9999)), 
+               'mhs_nim'=>$nim, 
                'mhs_nama'=>$name,
                'mhs_kontak'=>$faker->e164PhoneNumber, 
-               'mhs_foto'=>"https://i0.wp.com/itpoin.com/wp-content/uploads/2014/06/guest.png",
+               'mhs_foto'=>null,
                'angkatan'=>"2017",
                'status'=>"",
                'user_id'=>$user->id,
@@ -46,14 +47,15 @@ class UserSeeder extends Seeder
 
           //Dosen
           for($i=0; $i<=5; $i++){
-           $user= User::create(["username" => $faker->userName, "password" => Hash::make("12345678"),"pengguna"=>"dosen"]);
-            $name=$faker->name;
+             $nip=intval("1489".rand(0,9999));
+           $user= User::create(["username" => $nip, "password" => Hash::make("12345678"),"pengguna"=>"dosen"]);
+            $name= $faker->firstName;
             Dosen::create([
-            'dsn_nip'=>intval("130119".rand(0,9999)), 
+            'dsn_nip'=>$nip, 
             'dsn_nama'=>$name,
-            'dsn_kode'=>substr($name,0,3), 
+            'dsn_kode'=>strtoupper(substr($name,0,3)), 
             'dsn_kontak'=>$faker->e164PhoneNumber, 
-            'dsn_foto'=>"https://i0.wp.com/itpoin.com/wp-content/uploads/2014/06/guest.png",
+            'dsn_foto'=>null,
             'batas_bimbingan'=>4,
             'batas_penguji'=>4,
             'user_id'=>$user->id,

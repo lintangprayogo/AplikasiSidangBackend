@@ -43,10 +43,12 @@ class ApiControllerAuth extends Controller
                 throw new \Exception("Invalid Credentials");
             } else {
                 $tokenResult = $user->createToken('authToken')->plainTextToken;
-                $user['token']=$tokenResult;
+                $user['token']="Bearer ".$tokenResult;
                 return ResponseFormatter::success([
                     
-                    'user' => $user
+                    'user' => $user,
+                    'dosen'=>$user->dosen,
+                    'mahasiswa'=>$user->mahasiswa,
                 ], 'Authenticated');
             }
         } catch (Exception $exception) {
@@ -65,4 +67,13 @@ class ApiControllerAuth extends Controller
           
         
     }
+
+    public function logout(Request $request)
+    {
+        $user= $request->user();
+        $user->currentAccessToken()->delete();
+        return ResponseFormatter::success($user,'Token Revoked');
+        
+    }
+
 }
