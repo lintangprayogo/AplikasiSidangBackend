@@ -21,6 +21,8 @@ class CreateSkTable extends Migration
             $table->string("judul_inggris");
             $table->date("tanggal_persetujuan");
             $table->date("tanggal_kadaluarsa");
+            $table->integer('extend_count')->default(0);
+            $table->boolean("is_done")->default(false);
             $table->timestamps();
         });
         Schema::table('sk', function($table){

@@ -17,7 +17,8 @@ class SK extends Model
         'judul_inggris', 
         'informasi_waktu',
         'tanggal_persetujuan',
-        'tanggal_kadaluarsa'        
+        'tanggal_kadaluarsa',
+        'extend_count'        
         ];
    
         

@@ -19,9 +19,9 @@ class DosenFormSKController extends Controller
     {
         $dosen=Auth::user()->dosen;
         $response = FormSK::where("form_sk_nip_1","=",$dosen->dsn_nip)->
-        orWhere("form_sk_nip_2","=",$dosen->mhs_nim)->
-        orWhere("form_sk_nip_new_1","=",$dosen->mhs_nim)->
-        orWhere("form_sk_nip_new_1","=",$dosen->mhs_nim)
+        orWhere("form_sk_nip_2","=",$dosen->dsn_nip)->
+        orWhere("form_sk_nip_new_1","=",$dosen->dsn_nip)->
+        orWhere("form_sk_nip_new_1","=",$dosen->dsn_nip)
         ->get();
         return ResponseFormatter::success(
             $response,
