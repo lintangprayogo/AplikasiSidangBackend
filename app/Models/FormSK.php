@@ -22,6 +22,7 @@ class FormSK extends Model
         'form_sk_nip_2',
         'form_sk_dsn_nama_2',
         'form_sk_nip_new_1',
+        'form_sk_dsn_nama_new_1',
         'form_sk_dsn_nama_new_2',
         'form_sk_nip_new_2',
         'jenis',

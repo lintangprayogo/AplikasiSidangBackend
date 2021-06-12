@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\FormSK;
 use App\Models\PelaksanaSidang;
 use App\Models\SK;
-use Illuminate\Http\Request;
 
 class ProdiFormSKController extends Controller
 {
@@ -25,10 +24,17 @@ class ProdiFormSKController extends Controller
     public function formSKAccept($id){
         $formSK=FormSK::find($id);
         $sk=SK::where("sk_mhs_nim","=",$formSK->form_sk_mhs_nim)->first();
-        if($formSK->jenis=="PERPANJANG" && $sk->extend_count<2){
+        if($formSK->jenis=="PERPANJANG" && $sk->extend_count<2 &&
+         $formSK->persetujuan_pembimbing_1=="DISETUJUI" 
+         &&( $formSK->persetujuan_pembimbing_2=="DISETUJUI"||$formSK->persetujuan_pembimbing_2==null)
+        ){
             $this->extendSKDate($sk);
-        }else if($formSK->jenis == "RUBAH_SK"){
-            if($formSK->form_sk_nip_new_1){
+        }else if($formSK->jenis == "RUBAH_SK" && $formSK->persetujuan_pembimbing_1=="DISETUJUI" 
+        &&( $formSK->persetujuan_pembimbing_2=="DISETUJUI"||$formSK->persetujuan_pembimbing_2==null) ){
+            if($formSK->form_sk_nip_new_1 && $formSK->persetujuan_pembimbing_new_1=="DISETUJUI"&&
+            ($formSK->persetujuan_pembimbing_new_2=="DISETUJUI"||$formSK->persetujuan_pembimbing_new_2==null)
+        
+            ){
                 $sk=$this->createSK($formSK);
             }else {
                 $sk= $this->changeSKTitle($sk,$formSK->judul_indonesia_new,$formSK->judul_inggris_new);

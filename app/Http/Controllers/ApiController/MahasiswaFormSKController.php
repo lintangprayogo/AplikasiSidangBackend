@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FormSK;
 use App\Models\SK;
 use Exception;
-use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -124,8 +124,8 @@ class MahasiswaFormSKController extends Controller
         $fileNameToStore = $filename.'-'.time().'.'.$pdf_ext;
         $request->file('file')->storeAs('sk/mahasiswa',$fileNameToStore);
         $persetujuan_pembimbing_2=null;
-        $persetujuan_pembimbing_new_1=null;
-        $persetujuan_pembimbing_new_2=null;
+  
+
         if($request->sk_nip_2){
             $persetujuan_pembimbing_2="PENDING";
         }
@@ -150,6 +150,8 @@ class MahasiswaFormSKController extends Controller
                      "form_sk_nip_new_2"=>$request->sk_nip_new_2,
                      "form_sk_dsn_nama_1"=>$request->sk_dsn_nama_1,
                      "form_sk_dsn_nama_2"=>$request->sk_dsn_nama_2,
+                     "form_sk_dsn_nama_new_1"=>$request->sk_dsn_nama_new_1,
+                     "form_sk_dsn_nama_new_2"=>$request->sk_dsn_nama_new_2,
                      'persetujuan_pembimbing_1'=>"PENDING",
                      'persetujuan_pembimbing_2'=> $persetujuan_pembimbing_2,
                      'persetujuan_pembimbing_new_1'=>$persetujuan_pembimbing_new_1,

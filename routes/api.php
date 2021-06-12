@@ -9,6 +9,7 @@ use App\Http\Controllers\ApiController\DosenBimbinganController;
 use App\Http\Controllers\ApiController\DosenFormSKController;
 use App\Http\Controllers\ApiController\LakPeriodeSidangController;
 use App\Http\Controllers\ApiController\MahasiswaFormSKController;
+use App\Http\Controllers\ApiController\MahasiswaPendaftaranSidangController;
 use App\Http\Controllers\ApiController\ProdiFormSKController;
 use App\Http\Controllers\ApiController\ProfileController;
 use App\Http\Controllers\ApiController\SidangMahasiswaController;
@@ -41,6 +42,10 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('formsk/prodi/',[ProdiFormSKController::class,"index"]);
         Route::get('formsk/prodi/accept/{id}',[ProdiFormSKController::class,"formSKAccept"]);
         Route::get('formsk/prodi/reject/{id}',[ProdiFormSKController::class,"formSKReject"]);
+
+        Route::resource('daftar-sidang/mahasiswa', MahasiswaPendaftaranSidangController::class);
+
+
 
         Route::resource('dosen', ApiControllerDosen::class);
         Route::post('dosen/photo',[ProfileController::class,"updatePhotoDosen"]);

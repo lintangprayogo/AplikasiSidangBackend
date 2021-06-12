@@ -22,7 +22,7 @@ class CreateSkTable extends Migration
             $table->date("tanggal_persetujuan");
             $table->date("tanggal_kadaluarsa");
             $table->integer('extend_count')->default(0);
-            $table->boolean("is_done")->default(false);
+            $table->integer("sidang_count")->default(0);
             $table->timestamps();
         });
         Schema::table('sk', function($table){
