@@ -18,8 +18,12 @@ class CreateSidangTable extends Migration
             $table->unsignedBigInteger("sk_id")->nullable();
             $table->unsignedBigInteger("periode_id")->nullable();
             $table->date("tanggal_sidang")->nullable();
+            $table->time("jam_mulai")->nullable();
+            $table->time("jam_berakhir")->nullable();
             $table->string("revisi")->nullable();
             $table->string("draft_jurnal");
+            $table->string("persetujuan_pembimbing_1",15)->nullable();
+            $table->string("persetujuan_pembimbing_2",15)->nullable();
             $table->timestamps();
         });
 

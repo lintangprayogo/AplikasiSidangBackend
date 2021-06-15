@@ -171,6 +171,7 @@ class TugasAkhirDosenController extends Controller
 
     public function downloadSK($id)
     {
+        $dosen=Auth::user()->dosen;
         $rawData=SK::join('mahasiswa','sk.sk_mhs_nim',"=","mahasiswa.mhs_nim")
         ->join('pelaksana_sidang','pelaksana_sidang.sk_id',"=","sk.id")
         ->join('dosen','dosen.dsn_nip',"=","pelaksana_sidang.pelaksana_dsn_nip")
@@ -178,22 +179,25 @@ class TugasAkhirDosenController extends Controller
         "pelaksana_sidang.status as status_pembimbing","dosen.dsn_nama",
         "mahasiswa.mhs_nim",
         "dosen.dsn_nip","tanggal_persetujuan",
-        "tanggal_kadaluarsa","nomor_sk")->where('sk_id','=',$id)
+        "tanggal_kadaluarsa","nomor_sk")->where('sk.id','=',$id)
         ->orderBy("mhs_nim")->get()->groupBy('status_pembimbing');
       
+        if(count($rawData)==0){
+         return ResponseFormatter::success(
+            null,
+            "Data Successfully Retrived"
+        );
+        }
         $pembimbing1=null;
         if(count($rawData["PEMBIMBING1"])>0){
             $pembimbing1=$rawData["PEMBIMBING1"][0];
          }
  
         $pembimbing2=null;
-        if (property_exists("PEMBIMBING2",$rawData)){
-            if(count($rawData["PEMBIMBING2"])>0){
-                $pembimbing2=$rawData["PEMBIMBING2"][0];
-             }     
+        if(count($rawData["PEMBIMBING2"])>0){
+           $pembimbing2=$rawData["PEMBIMBING2"][0];
         }
 
-       
 
         $response = (object) [
             'sk_id' => $pembimbing1->sk_id,
@@ -207,7 +211,11 @@ class TugasAkhirDosenController extends Controller
             'nip_pembimbing2'=>null,
             'nama_pembimbing2'=>null,
             'tanggal_persetujuan'=>$this->tgl_indo( $pembimbing1->tanggal_persetujuan),
-            'tanggal_kadaluarsa'=>$this->tgl_indo( $pembimbing1->tanggal_kadaluarsa)
+            'tanggal_kadaluarsa'=>$this->tgl_indo( $pembimbing1->tanggal_kadaluarsa),
+            'status'=>$this->getStatus($pembimbing1->tanggal_kadaluarsa),
+            'jumlah_bimbigan1'=>0,
+            'jumlah_bimbigan2'=>0,
+            
           ];
 
 
@@ -216,11 +224,25 @@ class TugasAkhirDosenController extends Controller
             $response->nip_pembimbing2=$pembimbing2->dsn_nip;
             $response->nama_pembimbing2=$pembimbing2->dsn_nama;
           }
+          $bimbinganDatas=Bimbingan::where("bimbingan_mhs_nim","=",$response->mhs_nim)->get();
 
+          $jumlah_bimbigan1=0;
+          $jumlah_bimbigan2=0;
+
+          foreach ($bimbinganDatas as $value) {
+            if($value->bimbingan_dsn_nip=$response->nip_pembimbing1){
+                $jumlah_bimbigan1++;
+            }else if($value->bimbingan_dsn_nip=$response->nip_pembimbing2){
+                $jumlah_bimbigan2++;
+            }
+          }
+          
+          $response->jumlah_bimbigan1=$jumlah_bimbigan1;
+          $response->jumlah_bimbigan2=$jumlah_bimbigan2;
           
  
           view()->share('data',$response);
-          $pdf =  PDF::loadView('excel-sk', ["data"=>$response]);
+          $pdf =  PDF::loadView('pdf-sk', ["data"=>$response]);
 
       return $pdf->download('pdf_file.pdf');
     }

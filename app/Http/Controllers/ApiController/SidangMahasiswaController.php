@@ -15,8 +15,9 @@ class SidangMahasiswaController extends Controller
         $mahasiswa=Auth::user()->mahasiswa;
         $sk=SK::where("sk_mhs_nim",$mahasiswa->mhs_nim)->first();
         $originalDate=$sk->tanggal_persetujuan;
-        $sidangTerjadwalDate1 = date('Y-m-d', strtotime('+1 month', strtotime($originalDate)));
-        $sidangTerjadwalDate2 = date('Y-m-d', strtotime('+12 month', strtotime($originalDate)));
+        $sidangTerjadwalDate1 = date('Y-m-d', strtotime('+6 month', strtotime($originalDate)));
+        $sidangTerjadwalDate2 = date('Y-m-d', strtotime('+9 month', strtotime($originalDate)));
+        $sidangTerjadwalDate3 = date('Y-m-d', strtotime('+12 month', strtotime($originalDate)));
 
         $sidangTejadwalObj1=(object) [
             'judul' => 'Prediksi Sidang 1',
@@ -27,7 +28,12 @@ class SidangMahasiswaController extends Controller
             'judul' => 'Prediksi Sidang 2',
             'tanggal' => $sidangTerjadwalDate2,
           ];
-       $reponse=array($sidangTejadwalObj1,$sidangTerjadwalObj2);
+          
+          $sidangTerjadwalObj3=(object) [
+            'judul' => 'Prediksi Sidang 3',
+            'tanggal' => $sidangTerjadwalDate3,
+          ];
+       $reponse=array($sidangTejadwalObj1,$sidangTerjadwalObj2,$sidangTerjadwalObj3);
 
        return ResponseFormatter::success($reponse,"data succsess retrived !!");
     }

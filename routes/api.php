@@ -13,18 +13,19 @@ use App\Http\Controllers\ApiController\MahasiswaPendaftaranSidangController;
 use App\Http\Controllers\ApiController\ProdiFormSKController;
 use App\Http\Controllers\ApiController\ProfileController;
 use App\Http\Controllers\ApiController\SidangMahasiswaController;
+use App\Http\Controllers\ApiController\SidangProdiController;
 use App\Http\Controllers\ApiController\SKController;
 use App\Http\Controllers\ApiController\TugasAkhirController;
 use App\Http\Controllers\ApiController\TugasAkhirDosenController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 
 Route::group(['prefix' => 'v1'], function () {
-    
-    Route::post('/user/signin', [ApiControllerAuth::class, 'signin']);
-    Route::resource('periode-sidang/lak', LakPeriodeSidangController::class);
 
+   
+  
+    Route::post('/user/signin', [ApiControllerAuth::class, 'signin']);
+  
     
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('mahasiswa/photo',[ProfileController::class,"updatePhotoMahasiswa"]);
@@ -42,6 +43,10 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('formsk/prodi/',[ProdiFormSKController::class,"index"]);
         Route::get('formsk/prodi/accept/{id}',[ProdiFormSKController::class,"formSKAccept"]);
         Route::get('formsk/prodi/reject/{id}',[ProdiFormSKController::class,"formSKReject"]);
+        Route::post('sidang/prodi/plot-sidang',[SidangProdiController::class,"plotSidang"]);
+        Route::resource('sidang/prodi/', SidangProdiController::class);
+
+
 
         Route::resource('daftar-sidang/mahasiswa', MahasiswaPendaftaranSidangController::class);
 
@@ -56,8 +61,15 @@ Route::group(['prefix' => 'v1'], function () {
         Route::resource('sk', SKController::class);
         Route::get('tugas-akhir/download', [TugasAkhirController::class,"downloadSK"]);
         Route::resource('tugas-akhir', TugasAkhirController ::class);
-        Route::get('tugas-akhir-dosen/download', [TugasAkhirDosenController::class,"downloadSK"]);
+
+        Route::get('tugas-akhir-dosen/download/{id}', [TugasAkhirDosenController::class,"downloadSK"]);
         Route::resource('tugas-akhir-dosen', TugasAkhirDosenController::class);
+
+
+        Route::resource('periode-sidang/lak', LakPeriodeSidangController::class);
+
+
+
         Route::resource('bimbingan-dosen', DosenBimbinganController::class);
         Route::get('bimbingan-dosen/accept/all', [DosenBimbinganController::class,"acceptAll"]);
         Route::get('bimbingan-dosen/accept/{id}', [DosenBimbinganController::class,"accept"]);

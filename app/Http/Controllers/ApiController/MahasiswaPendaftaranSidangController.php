@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiController;
 
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
+use App\Models\Mahasiswa;
 use App\Models\PeriodeSidang;
 use App\Models\Sidang;
 use App\Models\SK;
@@ -33,15 +34,28 @@ class MahasiswaPendaftaranSidangController extends Controller
         );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function create()
     {
-        //
+        $mahasiswa=Auth::user()->mahasiswa;
+        $today=date("Y-m-d");
+        $periodeSidangList=PeriodeSidang::where('periode_mulai','<=', $today)
+        ->where('periode_akhir','>=', $today)
+        ->get();
+        $sk=Sk::where('tanggal_kadaluarsa','>=', $today)->where("sk_mhs_nim","=",$mahasiswa->mhs_nim)->first();
+
+        $data= (object) [
+            'mahasiswa' => $mahasiswa,
+            'periode_sidang_list' => $periodeSidangList,
+            'sk'=>$sk
+          ];
+        return ResponseFormatter::success(
+             $data,
+            "Data Successfully Retrived"
+        );
     }
+
+    
 
 
     public function store(Request $request)
@@ -69,18 +83,34 @@ class MahasiswaPendaftaranSidangController extends Controller
              $fileNameToStore = $filename.'-'.time().'.'.$pdf_ext;
              $request->file('file')->storeAs('draft_jurnal/mahasiswa',$fileNameToStore);
 
-             $pendaftaran_sidang=Sidang::create(
-                [
-                    "sk_id"=>$sk->id,
-                    "periode_id"=>$periodeSidang->id,
-                    "draft_jurnal"=>$fileNameToStore
-                ]
-             );
-             $pendaftaran_sidang->periode_judul=$periodeSidang->periode_judul;
-             $pendaftaran_sidang->jalur_sidang=$periodeSidang->jalur_sidang;
+             if($sk->sidang_count<2){
+                $pendaftaran_sidang=Sidang::create(
+                    [
+                        "sk_id"=>$sk->id,
+                        "periode_id"=>$periodeSidang->id,
+                        "draft_jurnal"=>$fileNameToStore
+                    ]
+                 );
+                 $pendaftaran_sidang->periode_judul=$periodeSidang->periode_judul;
+                 $pendaftaran_sidang->jalur_sidang=$periodeSidang->jalur_sidang;
+                 $pendaftaran_sidang->mhs_nim=$mahasiswa->mhs_nim;
+                 $pendaftaran_sidang->mhs_nama=$mahasiswa->mhs_nama;
+                 $sk->sidang_count=$sk->sidang_count++;
+                 $sk->save();
+                 return ResponseFormatter::success($pendaftaran_sidang,"Data Successfully Inserted");
+             }else {
+                return ResponseFormatter::error(
+                    [
+                        'message' =>  "You Dont Satisfify Requirement",
+                        'error' => null
+                    ],
+                    "You Dont Satisfify Requirement",
+                    "422",
+                );
+             }
+            
              
-
-             return ResponseFormatter::success($pendaftaran_sidang,"Data Successfully Inserted");
+           
             }catch (ValidationException $exception) {
                 return ResponseFormatter::error(
                     [
