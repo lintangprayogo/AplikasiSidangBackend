@@ -40,7 +40,7 @@ class MahasiswaPendaftaranSidangController extends Controller
         $mahasiswa=Auth::user()->mahasiswa;
         $today=date("Y-m-d");
         $periodeSidangList=PeriodeSidang::where('periode_mulai','<=', $today)
-        ->where('periode_akhir','>=', $today)
+        ->orWhere('periode_akhir','>=', $today)
         ->get();
         $sk=Sk::where('tanggal_kadaluarsa','>=', $today)->where("sk_mhs_nim","=",$mahasiswa->mhs_nim)->first();
 

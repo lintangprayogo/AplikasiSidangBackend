@@ -61,8 +61,11 @@ class JadwalSidangImport implements ToCollection
                              "jam_berakhir"=>"$jam_akhir"
                             ]);
                         
-                        PelaksanaSidang::where("sk_id","=",$dataSidang->sk_id)->where("status","=","PENGUJI1")->
-                        orWhere("status","=","PENGUJI2")->delete();
+                        PelaksanaSidang::where("sk_id","=",$dataSidang->sk_id)->
+                        
+                        where("status","=","PENGUJI1")->
+                        orWhere("status","=","PENGUJI2")->
+                        Where("tanggal_sidang",">=",$dataSidang->tangal_sidang)->delete();
                         
                        
                         PelaksanaSidang::create(["sk_id"=>$dataSidang->sk_id,

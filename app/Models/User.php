@@ -67,6 +67,12 @@ class User extends Authenticatable
         return $this->hasOne('App\Models\dosen','user_id');
     }
 
+    public function prodi()
+    {
+        return $this->hasOne('App\Models\prodi','user_id');
+    }
+
+
     public function mahasiswa()
     {
         return $this->hasOne('App\Models\mahasiswa','user_id');

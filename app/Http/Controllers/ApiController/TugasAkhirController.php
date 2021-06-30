@@ -39,7 +39,8 @@ class TugasAkhirController extends Controller
         "dosen.dsn_nip","tanggal_persetujuan",
         "tanggal_kadaluarsa","nomor_sk")->where('mhs_nim','=',$mahasiswa->mhs_nim)
         ->orderBy("mhs_nim")->get()->groupBy('status_pembimbing');
-      
+        
+   
         if(count($rawData)==0){
          return ResponseFormatter::success(
             null,
@@ -52,8 +53,10 @@ class TugasAkhirController extends Controller
          }
  
         $pembimbing2=null;
-        if(count($rawData["PEMBIMBING2"])>0){
-           $pembimbing2=$rawData["PEMBIMBING2"][0];
+        if ( isset($rawData["PEMBIMBING2"])){
+            if(count($rawData["PEMBIMBING2"])>0){
+                $pembimbing2=$rawData["PEMBIMBING2"][0];
+             }     
         }
 
 
@@ -83,7 +86,6 @@ class TugasAkhirController extends Controller
             $response->nama_pembimbing2=$pembimbing2->dsn_nama;
           }
           $bimbinganDatas=Bimbingan::where("bimbingan_mhs_nim","=",$mahasiswa->mhs_nim)->get();
-
           $jumlah_bimbigan1=0;
           $jumlah_bimbigan2=0;
 
@@ -140,9 +142,12 @@ class TugasAkhirController extends Controller
          }
  
         $pembimbing2=null;
-        if(count($rawData["PEMBIMBING2"])>0){
-           $pembimbing2=$rawData["PEMBIMBING2"][0];
+        if ( isset($rawData["PEMBIMBING2"])){
+            if(count($rawData["PEMBIMBING2"])>0){
+                $pembimbing2=$rawData["PEMBIMBING2"][0];
+             }
         }
+       
 
 
         $response = (object) [

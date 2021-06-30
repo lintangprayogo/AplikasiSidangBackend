@@ -113,5 +113,56 @@ class ProfileController extends Controller
              return ResponseFormatter::success($dosen,'File successfully uploaded');
          }
      }
+     public function updateProfileProdi(Request $request){
+
+        $user= Auth::user();
+        $prodi=$user->prodi;
+        $photo=$request->photo;
+        try{
+         if($prodi){
+             $prodi->update($request->all());
+             return ResponseFormatter::success(
+                 $prodi,
+                 "Data Successfully Updated"
+             );
+          }
+         }catch (Exception $exception) {
+             if(!$exception->status){
+                 $exception->status=500;
+             }
+             return ResponseFormatter::error(
+                 [
+                     'message' =>$exception->getMessage(),
+                     'error' => $exception
+                 ],
+                 $exception->getMessage(),
+                 $exception->status,
+             );
+          }
+     }
+ 
+     public function updatePhotoProdi(Request $request)
+     {
+         $validator = Validator::make($request->all(), [
+             'file' => 'required|image|max:2048',
+         ]);
+ 
+         if ($validator->fails()) {
+             return ResponseFormatter::error(['error'=>$validator->errors()], 'Update Photo Fails', 422);
+         }
+ 
+         if ($request->file('file')) {
+             $image_name = $request->file('file')->getClientOriginalName();
+             $filename = pathinfo($image_name,PATHINFO_FILENAME);
+             $image_ext = $request->file('file')->getClientOriginalExtension();
+             $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+             $request->file('file')->storeAs('prodi',$fileNameToStore);
+             $user = Auth::user();
+             $prodi=$user->prodi;
+             $prodi->prd_foto = $fileNameToStore;
+             $prodi->save();
+             return ResponseFormatter::success($prodi,'File successfully uploaded');
+         }
+     }
 
 }

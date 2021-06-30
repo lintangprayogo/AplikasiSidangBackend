@@ -17,13 +17,14 @@ use App\Http\Controllers\ApiController\SidangProdiController;
 use App\Http\Controllers\ApiController\SKController;
 use App\Http\Controllers\ApiController\TugasAkhirController;
 use App\Http\Controllers\ApiController\TugasAkhirDosenController;
+use App\Http\Controllers\ApiController\SidangDosenController;
 use Illuminate\Support\Facades\Route;
 
 
 Route::group(['prefix' => 'v1'], function () {
 
    
-  
+   
     Route::post('/user/signin', [ApiControllerAuth::class, 'signin']);
   
     
@@ -35,7 +36,11 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('formsk/dosen/',[DosenFormSKController::class,"index"]);
         Route::get('formsk/dosen/accept/{id}',[DosenFormSKController::class,"formSKAccept"]);
         Route::get('formsk/dosen/reject/{id}',[DosenFormSKController::class,"formSKReject"]);
-        
+        Route::get('sidang/dosen/accept/{id}',[SidangDosenController::class,"sidangAccept"]);
+        Route::get('sidang/dosen/reject/{id}',[SidangDosenController::class,"sidangReject"]);
+        Route::post('sidang/dosen/nilai/{id}',[SidangDosenController::class,"sidangNilai"]);
+        Route::resource('sidang/dosen', SidangDosenController::class);
+
         Route::get('formsk/mahasiswa/',[MahasiswaFormSKController::class,"index"]);
         Route::post('formsk/mahasiswa/extend',[MahasiswaFormSKController::class,"extendSK"]);
         Route::post('formsk/mahasiswa/change',[MahasiswaFormSKController::class,"changeSK"]);
@@ -46,6 +51,9 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('sidang/prodi/plot-sidang',[SidangProdiController::class,"plotSidang"]);
         Route::resource('sidang/prodi/', SidangProdiController::class);
 
+        Route::post('prodi/photo',[ProfileController::class,"updatePhotoProdi"]);
+        Route::put('prodi/profile',[ProfileController::class,"updateProfileProdi"]);
+
 
 
         Route::resource('daftar-sidang/mahasiswa', MahasiswaPendaftaranSidangController::class);
@@ -55,6 +63,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::resource('dosen', ApiControllerDosen::class);
         Route::post('dosen/photo',[ProfileController::class,"updatePhotoDosen"]);
         Route::put('dosen/profile',[ProfileController::class,"updateProfileDosen"]);
+        
         Route::resource('mahasiswa', ApiControllerMahasiswa::class);
         Route::resource('informasi', ApiControllerInformasi::class);
         Route::get('sk/mahasiswa', [SKController::class,"showMahasiswa"]);

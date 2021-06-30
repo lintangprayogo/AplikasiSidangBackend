@@ -30,7 +30,6 @@ class SKController extends Controller
         "tanggal_kadaluarsa","nomor_sk")
         ->orderBy("mhs_nim")->get()->groupBy('status_pembimbing');
 
-         
         $response=[];
         if(count($rawData)==0){
             return ResponseFormatter::success(
@@ -41,9 +40,10 @@ class SKController extends Controller
 
         $pembimbing1=$rawData["PEMBIMBING1"];
         $pembimbing2=[];
-        if (property_exists("PEMBIMBING2",$rawData)){
+        if ( isset($rawData["PEMBIMBING2"])){
             $pembimbing2= $rawData["PEMBIMBING2"];
         }
+ 
 
         
  

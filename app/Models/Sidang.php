@@ -12,6 +12,9 @@ class Sidang extends Model
     protected $fillable = [
       "sk_id",
       "periode_id",
-       "draft_jurnal"
+       "draft_jurnal",
+       "jam_mulai",
+       "jam_berakhir"
+       
      ];   
 }

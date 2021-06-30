@@ -20,7 +20,7 @@ class SidangProdiController extends Controller
         $response=Sidang::join('sk','sk.id',"=","sidang.sk_id")
         ->join('periode_sidang','periode_sidang.id',"=","sidang.periode_id")
         ->join('mahasiswa','sk.sk_mhs_nim',"=","mahasiswa.mhs_nim")
-        
+    
         ->get();
         return ResponseFormatter::success(
             $response,
