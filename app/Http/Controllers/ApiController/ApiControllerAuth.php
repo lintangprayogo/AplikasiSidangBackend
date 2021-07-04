@@ -50,6 +50,7 @@ class ApiControllerAuth extends Controller
                     'dosen'=>$user->dosen,
                     'mahasiswa'=>$user->mahasiswa,
                     'prodi'=>$user->prodi,
+                    'lak'=>$user->lak
                 ], 'Authenticated');
             }
         } catch (Exception $exception) {

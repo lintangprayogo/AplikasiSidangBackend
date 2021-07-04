@@ -6,6 +6,7 @@ use App\Models\user;
 use App\Models\dosen;
 use App\Models\mahasiswa;
 use App\Models\prodi;
+use App\Models\lak;
 use Exception;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;       
@@ -38,9 +39,23 @@ class UserSeeder extends Seeder
                'mhs_email'=>$faker->email,]);
          }
          
-         //Lak
-         for($i=0; $i<=5; $i++){
-            User::create(["username" => $faker->userName, "password" => Hash::make("12345678"),"pengguna"=>"lak"]);
+          //Lak
+          for($i=0; $i<=5; $i++){
+            try{
+               $nip=intval("1484".rand(0,9999));
+               $nomor_telpon=intval("08221664".rand(0,999));
+             $user= User::create(["username" => $nip, "password" => Hash::make("12345678"),"pengguna"=>"lak"]);
+              $name= $faker->firstName;
+              Lak::create([
+              'lak_nip'=>$nip, 
+              'lak_nama'=>$name,
+              'lak_kontak'=>$nomor_telpon, 
+              'lak_foto'=>null,
+              'user_id'=>$user->id,
+              'lak_email'=>$faker->email]);
+             }catch(Exception $e){
+
+             }         
          }
 
            //Prodi

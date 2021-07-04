@@ -57,7 +57,9 @@ Route::group(['prefix' => 'v1'], function () {
 
 
         Route::resource('daftar-sidang/mahasiswa', MahasiswaPendaftaranSidangController::class);
-
+        Route::post('sidang/mahasiswa/revisi/{id}', [SidangMahasiswaController::class,"uploadLembarRevisi"]);
+        Route::get('sidang/mahasiswa/prediksi', [SidangMahasiswaController::class,"prediksiSidang"]);
+        Route::resource('sidang/mahasiswa', SidangMahasiswaController::class);
 
 
         Route::resource('dosen', ApiControllerDosen::class);
@@ -77,6 +79,9 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::resource('periode-sidang/lak', LakPeriodeSidangController::class);
 
+        Route::post('lak/photo',[ProfileController::class,"updatePhotoLak"]);
+        Route::put('lak/profile',[ProfileController::class,"updateProfileLak"]);
+
 
 
         Route::resource('bimbingan-dosen', DosenBimbinganController::class);
@@ -85,7 +90,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('bimbingan-dosen/reject/{id}', [DosenBimbinganController::class,"reject"]);
         Route::resource('bimbingan', ApiControllerBimbingan::class);
         Route::post('logout', [ApiControllerAuth::class, 'logout']);
-        Route::get('sidang/mahasiswa/prediksi', [SidangMahasiswaController::class,"prediksiSidang"]);
+       
     });
  
 

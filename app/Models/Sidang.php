@@ -14,7 +14,8 @@ class Sidang extends Model
       "periode_id",
        "draft_jurnal",
        "jam_mulai",
-       "jam_berakhir"
+       "jam_berakhir",
+       "revisi"
        
      ];   
 }

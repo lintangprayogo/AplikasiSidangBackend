@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "mikestead.dotenv",
+        "onecentlin.laravel5-snippets",
+        "stef-k.laravel-goto-controller",
+        "codingyu.laravel-goto-view",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "austenc.laravel-blade-spacer"
+    ]
+}

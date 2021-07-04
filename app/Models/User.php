@@ -71,6 +71,10 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\Models\prodi','user_id');
     }
+    public function lak()
+    {
+        return $this->hasOne('App\Models\lak','user_id');
+    }
 
 
     public function mahasiswa()

@@ -165,4 +165,58 @@ class ProfileController extends Controller
          }
      }
 
+     public function updateProfileLak(Request $request){
+
+        $user= Auth::user();
+        $lak=$user->lak;
+        $photo=$request->photo;
+        try{
+         if($lak){
+             $lak->update($request->all());
+             return ResponseFormatter::success(
+                 $lak,
+                 "Data Successfully Updated"
+             );
+          }
+         }catch (Exception $exception) {
+             if(!$exception->status){
+                 $exception->status=500;
+             }
+             return ResponseFormatter::error(
+                 [
+                     'message' =>$exception->getMessage(),
+                     'error' => $exception
+                 ],
+                 $exception->getMessage(),
+                 $exception->status,
+             );
+          }
+     }
+ 
+     public function updatePhotoLak(Request $request)
+     {
+         $validator = Validator::make($request->all(), [
+             'file' => 'required|image|max:2048',
+         ]);
+ 
+         if ($validator->fails()) {
+             return ResponseFormatter::error(['error'=>$validator->errors()], 'Update Photo Fails', 422);
+         }
+ 
+         if ($request->file('file')) {
+             $image_name = $request->file('file')->getClientOriginalName();
+             $filename = pathinfo($image_name,PATHINFO_FILENAME);
+             $image_ext = $request->file('file')->getClientOriginalExtension();
+             $fileNameToStore = $filename.'-'.time().'.'.$image_ext;
+             $request->file('file')->storeAs('lak',$fileNameToStore);
+             $user = Auth::user();
+             $lak=$user->lak;
+             $lak->lak_foto = $fileNameToStore;
+             $lak->save();
+             return ResponseFormatter::success($lak,'File successfully uploaded');
+         }
+     }
+
+     
+
 }
