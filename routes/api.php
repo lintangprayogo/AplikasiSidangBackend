@@ -21,14 +21,19 @@ use App\Http\Controllers\ApiController\SidangDosenController;
 use Illuminate\Support\Facades\Route;
 
 
+
+
 Route::group(['prefix' => 'v1'], function () {
 
    
    
     Route::post('/user/signin', [ApiControllerAuth::class, 'signin']);
   
-    
+
+
     Route::middleware(['auth:sanctum'])->group(function () {
+
+
         Route::post('mahasiswa/photo',[ProfileController::class,"updatePhotoMahasiswa"]);
         Route::put('mahasiswa/profile',[ProfileController::class,"updateProfileMahasiswa"]);
         Route::get('formsk/mahasiswa/',[MahasiswaFormSKController::class,"index"]);
@@ -39,6 +44,8 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('sidang/dosen/accept/{id}',[SidangDosenController::class,"sidangAccept"]);
         Route::get('sidang/dosen/reject/{id}',[SidangDosenController::class,"sidangReject"]);
         Route::post('sidang/dosen/nilai/{id}',[SidangDosenController::class,"sidangNilai"]);
+        Route::get('sidang/dosen/jurnal/{id}', [SidangDosenController::class,"jurnalDownload"]);
+        Route::get('sidang/dosen/revisi/{id}', [SidangDosenController::class,"revisiDownload"]);
         Route::resource('sidang/dosen', SidangDosenController::class);
 
         Route::get('formsk/mahasiswa/',[MahasiswaFormSKController::class,"index"]);
@@ -49,6 +56,9 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('formsk/prodi/accept/{id}',[ProdiFormSKController::class,"formSKAccept"]);
         Route::get('formsk/prodi/reject/{id}',[ProdiFormSKController::class,"formSKReject"]);
         Route::post('sidang/prodi/plot-sidang',[SidangProdiController::class,"plotSidang"]);
+        Route::get('sidang/prodi/jurnal/{id}', [SidangProdiController::class,"jurnalDownload"]);
+        Route::get('sidang/prodi/revisi/{id}', [SidangProdiController::class,"revisiDownload"]);
+        Route::get('sidang/prodi/{id}', [SidangProdiController::class,"show"]);
         Route::resource('sidang/prodi/', SidangProdiController::class);
 
         Route::post('prodi/photo',[ProfileController::class,"updatePhotoProdi"]);
@@ -59,6 +69,8 @@ Route::group(['prefix' => 'v1'], function () {
         Route::resource('daftar-sidang/mahasiswa', MahasiswaPendaftaranSidangController::class);
         Route::post('sidang/mahasiswa/revisi/{id}', [SidangMahasiswaController::class,"uploadLembarRevisi"]);
         Route::get('sidang/mahasiswa/prediksi', [SidangMahasiswaController::class,"prediksiSidang"]);
+        Route::get('sidang/mahasiswa/jurnal/{id}', [SidangMahasiswaController::class,"jurnalDownload"]);
+        Route::get('sidang/mahasiswa/revisi/{id}', [SidangMahasiswaController::class,"revisiDownload"]);
         Route::resource('sidang/mahasiswa', SidangMahasiswaController::class);
 
 

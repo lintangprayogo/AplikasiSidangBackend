@@ -145,7 +145,8 @@ class TugasAkhirDosenController extends Controller
             $response->nip_pembimbing2=$pembimbing2->dsn_nip;
             $response->nama_pembimbing2=$pembimbing2->dsn_nama;
           }
-          $bimbinganDatas=Bimbingan::where("bimbingan_mhs_nim","=",$response->mhs_nim)->get();
+          $bimbinganDatas=Bimbingan::where("bimbingan_mhs_nim","=",$response->mhs_nim)->
+          where("bimbingan_status","=","disetujui")->get();
 
           $jumlah_bimbigan1=0;
           $jumlah_bimbigan2=0;

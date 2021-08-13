@@ -9,7 +9,7 @@ use App\Models\PelaksanaSidang;
 use App\Models\SK;
 use App\Models\Sidang;
 use Barryvdh\DomPDF\Facade as PDF;
-
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -334,6 +334,15 @@ class SidangMahasiswaController extends Controller
 
 
 
+ function jurnalDownload($id){
+   $sidang=Sidang::find($id);
+    return Storage::download('draft_jurnal/mahasiswa/'.$sidang->draft_jurnal);
+ }
+
+ function revisiDownload($id){
+  $sidang=Sidang::find($id);
+   return Storage::download('lembar_revisi/'.$sidang->revisi);
+}
 
 
 

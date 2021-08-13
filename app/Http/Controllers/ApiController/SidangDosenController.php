@@ -9,7 +9,7 @@ use App\Models\Sidang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade as PDF;
-
+use Illuminate\Support\Facades\Storage;
 class SidangDosenController extends Controller
 {
     //
@@ -448,7 +448,17 @@ class SidangDosenController extends Controller
 
 
 
- 
+    function jurnalDownload($id){
+        $sidang=Sidang::find($id);
+         return Storage::download('draft_jurnal/mahasiswa/'.$sidang->draft_jurnal);
+      }
+     
+     
+      function revisiDownload($id){
+       $sidang=Sidang::find($id);
+        return Storage::download('lembar_revisi/'.$sidang->revisi);
+     }
+     
 
 
 
