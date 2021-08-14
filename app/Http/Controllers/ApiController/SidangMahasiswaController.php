@@ -95,10 +95,11 @@ class SidangMahasiswaController extends Controller
         "judul_indonesia",
         "jam_berakhir",
         "sk_id",
+        "revisi",
         "jam_mulai"
       )
       ->where("sk_id", "=", $sk->id)->where("sidang.id", "=", $id)->first();
-
+  
     $pembimbing_1 = PelaksanaSidang::where("status", "=", "PEMBIMBING1")->where("sk_id", "=", $sidang->sk_id)
       ->first();
     $pembimbing_2 = PelaksanaSidang::where("status", "=", "PEMBIMBING2")->where("sk_id", "=", $sidang->sk_id)
@@ -304,19 +305,10 @@ class SidangMahasiswaController extends Controller
     $sidang->na_laporan = number_format($sidang->na_laporan, 2);
     $sidang->na_presentasi = number_format($sidang->na_presentasi, 2);
     $sidang->na_produk = number_format($sidang->na_produk, 2);
-    if ($sidang->tanggal_sidang)
-      $sidang->tanggal_sidang = $this->tgl_indo($sidang->tanggal_sidang);
-
+    
+     
     $sidang->tanggal_revisi = date('Y-m-d', strtotime('+15 day', strtotime($sidang->tanggal_sidang)));
-    $sidang->tanggal_revisi = $this->tgl_indo($sidang->tanggal_revisi);
-
     $sidang->index_nilai = $this->indexNilai($sidang->na_total);
-
-
-
-
-
-
 
     if ($request->wantsJson()) {
       return ResponseFormatter::success(
@@ -324,6 +316,8 @@ class SidangMahasiswaController extends Controller
         "Data Successfully Accepted"
       );
     } else {
+      $sidang->tanggal_sidang = $this->tgl_indo($sidang->tanggal_sidang);
+      $sidang->tanggal_revisi = $this->tgl_indo($sidang->tanggal_revisi);
       view()->share('sidang', $sidang);
       $pdf =  PDF::loadView('berita-acara', ["sidang" => $sidang]);
       return $pdf->download('pdf_file.pdf');
@@ -338,6 +332,7 @@ class SidangMahasiswaController extends Controller
    $sidang=Sidang::find($id);
     return Storage::download('draft_jurnal/mahasiswa/'.$sidang->draft_jurnal);
  }
+
 
  function revisiDownload($id){
   $sidang=Sidang::find($id);

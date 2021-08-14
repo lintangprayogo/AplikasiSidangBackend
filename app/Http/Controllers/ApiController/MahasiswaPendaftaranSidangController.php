@@ -27,6 +27,15 @@ class MahasiswaPendaftaranSidangController extends Controller
         ->join('periode_sidang','periode_sidang.id',"=","sidang.periode_id")
         ->join('mahasiswa','sk.sk_mhs_nim',"=","mahasiswa.mhs_nim")
         ->where("sk_mhs_nim","=",$mahasiswa->mhs_nim)
+        ->select("sidang.id",
+        "draft_jurnal",
+        "judul_indonesia",
+        "mhs_nama",
+        "mhs_nim",
+        "periode_judul",
+        "tanggal_sidang",
+        "jalur_sidang"
+        )
         ->get();
         return ResponseFormatter::success(
             $response,

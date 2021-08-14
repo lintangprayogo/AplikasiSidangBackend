@@ -18,9 +18,11 @@ class SKController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $rawData=SK::join('mahasiswa','sk.sk_mhs_nim',"=","mahasiswa.mhs_nim")
+
+        
+        $q=SK::join('mahasiswa','sk.sk_mhs_nim',"=","mahasiswa.mhs_nim")
         ->join('pelaksana_sidang','pelaksana_sidang.sk_id',"=","sk.id")
         ->join('dosen','dosen.dsn_nip',"=","pelaksana_sidang.pelaksana_dsn_nip")
         ->select("sk.id as sk_id","mahasiswa.mhs_nama","sk.judul_indonesia","sk.judul_inggris",
@@ -28,7 +30,17 @@ class SKController extends Controller
         "mahasiswa.mhs_nim",
         "dosen.dsn_nip","tanggal_persetujuan",
         "tanggal_kadaluarsa","nomor_sk")
-        ->orderBy("mhs_nim")->get()->groupBy('status_pembimbing');
+        ->orderBy("mhs_nim");
+
+
+        if($request->active==1){
+            $q->where('tanggal_kadaluarsa', '>=', date('Y-m-d').' 00:00:00');
+        }else {
+            $q->where('tanggal_kadaluarsa', '<', date('Y-m-d').' 00:00:00');
+        }
+
+        $rawData=$q->get()->groupBy('status_pembimbing');
+
 
         $response=[];
         if(count($rawData)==0){

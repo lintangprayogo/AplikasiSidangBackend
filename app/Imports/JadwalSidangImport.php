@@ -37,7 +37,6 @@ class JadwalSidangImport implements ToCollection
                     orWhere("tanggal_sidang","=",null)
                     ->first();
                    
-
                     $pembimbing1=PelaksanaSidang::where("status","=","PEMBIMBING1")->where("sk_id","=",$dataSidang->sk_id)->first()->dosen();
                     $pembimbing2=PelaksanaSidang::where("status","=","PEMBIMBING2")->where("sk_id","=",$dataSidang->sk_id)->first()->dosen();
                     $penguji1= Dosen::where("dsn_kode",$kode_penguji1)->first();
@@ -55,18 +54,22 @@ class JadwalSidangImport implements ToCollection
 
                     ){   
                        
-                         Sidang::where("id","=",$dataSidang->id)->update(
+                         Sidang::where("sk_id","=",$dataSidang->sk_id)
+                         ->where("tanggal_sidang",">=",$today)
+                         ->orWhere("tanggal_sidang","=",null)
+                         ->update(
                              ["tanggal_sidang"=>$tanggal_sidang,
                              "jam_mulai"=>"$jam_mulai",
                              "jam_berakhir"=>"$jam_akhir"
                             ]);
-                        
+                            $dataSidang->tanggal_sidang=$tanggal_sidang;
+                            $dataSidang->jam_mulai=$jam_mulai;
+                            $dataSidang->jam_berakhir=$jam_akhir;
+                      
                         PelaksanaSidang::where("sk_id","=",$dataSidang->sk_id)->
-                        
                         where("status","=","PENGUJI1")->
                         orWhere("status","=","PENGUJI2")->
-                        Where("tanggal_sidang",">=",$dataSidang->tangal_sidang)->delete();
-                        
+                        Where("tanggal_sidang",">=",$tanggal_sidang)->delete();  
                        
                         PelaksanaSidang::create(["sk_id"=>$dataSidang->sk_id,
                             "pelaksana_dsn_nip"=>$penguji1->dsn_nip,
@@ -90,7 +93,7 @@ class JadwalSidangImport implements ToCollection
         
     
             }catch(Exception $e){
-                
+                echo $e;
             }
       
         }

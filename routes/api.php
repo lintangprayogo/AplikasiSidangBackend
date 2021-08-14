@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['prefix' => 'v1'], function () {
-
+    Route::resource('sk', SKController::class);
    
    
     Route::post('/user/signin', [ApiControllerAuth::class, 'signin']);
@@ -81,7 +81,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::resource('mahasiswa', ApiControllerMahasiswa::class);
         Route::resource('informasi', ApiControllerInformasi::class);
         Route::get('sk/mahasiswa', [SKController::class,"showMahasiswa"]);
-        Route::resource('sk', SKController::class);
+  
         Route::get('tugas-akhir/download', [TugasAkhirController::class,"downloadSK"]);
         Route::resource('tugas-akhir', TugasAkhirController ::class);
 
