@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\Hash;
 use Exception;
+use App\Models\SK;
 use Illuminate\Support\Str;
 
 class ApiControllerMahasiswa extends Controller
@@ -20,8 +21,14 @@ class ApiControllerMahasiswa extends Controller
      */
      function index()
     {
-        $response = DB::table('mahasiswa')
-        ->get();
+        $response = SK::rightJoin('mahasiswa','sk.sk_mhs_nim',"=","mahasiswa.mhs_nim")
+        ->select(
+            "mahasiswa.mhs_nama",
+        "mahasiswa.mhs_nim",
+        "judul_indonesia as judul_nama"
+        )
+        ->orderBy("mhs_nim")->get();
+
         return ResponseFormatter::success(
             $response,
             "Data Successfully Retrived"
@@ -55,7 +62,7 @@ class ApiControllerMahasiswa extends Controller
         
             $user = new user();
             $mahasiswa = new mahasiswa();
-            $user->username = Str::slug($request->mhs_nama);
+            $user->username = $request->mhs_nim;
             $user->password = Hash::make($request->mhs_nim);
             $user->pengguna = $status_user;
     

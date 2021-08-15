@@ -69,6 +69,7 @@ class SKImport implements ToCollection
                                 'nama_pembimbing2'=>null,
                                 'tanggal_persetujuan'=>$sk->tanggal_persetujuan,
                                 'tanggal_kadaluarsa'=>$sk->tanggal_kadaluarsa,
+                                'status'=>'AKTIF'
                               ];
                             
                              if($pembimbing2){
