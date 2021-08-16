@@ -61,7 +61,7 @@ class ApiControllerAuth extends Controller
                     'error' => $exception
                 ],
                 $exception->getMessage(),
-                $exception->status
+                500
             );
         }
 
