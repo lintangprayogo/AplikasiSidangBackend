@@ -8,6 +8,12 @@ use App\Models\PeriodeSidang;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Sidang;
+use App\Models\NilaiSidang;
+use App\Models\PelaksanaSidang;
+use App\Exports\BeritaAcaraExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class LakPeriodeSidangController extends Controller
 {
     
@@ -123,5 +129,9 @@ class LakPeriodeSidangController extends Controller
             $periode_sidang,
             "Data Successfully Retrived"
         );
+    }
+
+    public function beritaAcaraSidangExcel(){
+        return Excel::download(new BeritaAcaraExport, 'berita_acara.xlsx');
     }
 }

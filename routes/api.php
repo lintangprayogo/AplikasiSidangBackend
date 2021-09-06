@@ -25,7 +25,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1'], function () {
     Route::resource('sk', SKController::class);
-   
+    Route::get('sidang/prodi/catatan-revisi/{id}', [SidangProdiController::class,"getCatatanRevisi"]);
+    Route::get('berita-acara-sidang/lak/excel', [LakPeriodeSidangController::class,"beritaAcaraSidangExcel"]);
+
    
     Route::post('/user/signin', [ApiControllerAuth::class, 'signin']);
   
@@ -88,9 +90,8 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('tugas-akhir-dosen/download/{id}', [TugasAkhirDosenController::class,"downloadSK"]);
         Route::resource('tugas-akhir-dosen', TugasAkhirDosenController::class);
 
-
+        Route::get('berita-acara-sidang/lak', [LakPeriodeSidangController::class,"beritaAcaraSidangExcel"]);
         Route::resource('periode-sidang/lak', LakPeriodeSidangController::class);
-
         Route::post('lak/photo',[ProfileController::class,"updatePhotoLak"]);
         Route::put('lak/profile',[ProfileController::class,"updateProfileLak"]);
 

@@ -124,6 +124,8 @@ class SidangDosenController extends Controller
         $nilai_laporan=$request->nilai_laporan;
         $nilai_presentasi=$request->nilai_presentasi;
         $nilai_produk=$request->nilai_produk;
+        $catatan_revisi=$request->catatan_revisi;
+     
         if(!$sidang){
             return ResponseFormatter::error(
                 [
@@ -160,6 +162,12 @@ class SidangDosenController extends Controller
                 "nilai_total"=>$nilai_total,
                 "sumber"=>$pelaksana_sidang->status  
             ]);
+
+            if($pelaksana_sidang->status="PEMBIMBING1"){
+              $sidang->catatan_revisi=$catatan_revisi;
+              $sidang->save();
+            }
+        
             return ResponseFormatter::success(
                 $nilaiSidang,
                 "Data Successfully Accepted"
@@ -201,21 +209,16 @@ class SidangDosenController extends Controller
       $pembimbing_2 = PelaksanaSidang::where("status", "=", "PEMBIMBING2")->where("sk_id", "=", $sidang->sk_id)
         ->first();
   
-  
-  
-  
+
       $penguji_1 = PelaksanaSidang::where("status", "=", "PENGUJI1")->where("sk_id", "=", $sidang->sk_id)
         ->first();
       $penguji_2 = PelaksanaSidang::where("status", "=", "PENGUJI2")->where("sk_id", "=", $sidang->sk_id)
         ->first();
   
-  
       $jml_pembimbing = 0;
       $jml_penguji = 0;
   
-  
-  
-  
+
       if ($pembimbing_1) {
         $sidang->pembimbing_1 = $pembimbing_1->dosen()->dsn_nama;
         $sidang->pembimbing_nip_1 = $pembimbing_1->dosen()->dsn_nip;
@@ -315,9 +318,6 @@ class SidangDosenController extends Controller
         $sidang->ra_produk = $sidang->nilai_pembimbing2_produk / $jml_pembimbing;
       }
   
-  
-  
-  
       //penguji
       if ($sidang->nilai_penguji2_laporan && $sidang->nilai_penguji1_laporan) {
         $sidang->rb_laporan =
@@ -346,9 +346,6 @@ class SidangDosenController extends Controller
         $sidang->rb_produk = $sidang->nilai_penguji2_produk / $jml_penguji;
       }
   
-  
-  
-  
       if ($sidang->ra_laporan && $sidang->rb_laporan) {
         $sidang->rt_laporan = $sidang->ra_laporan * 0.6 + $sidang->rb_laporan * 0.4;
       } else if ($sidang->ra_laporan) {
@@ -357,18 +354,13 @@ class SidangDosenController extends Controller
         $sidang->rt_laporan = $sidang->rb_laporan * 0.4;
       }
   
-  
       if ($sidang->ra_presentasi && $sidang->rb_presentasi) {
-  
         $sidang->rt_presentasi = $sidang->ra_presentasi * 0.6 + $sidang->rb_presentasi * 0.4;
       } else if ($sidang->ra_presentasi) {
         $sidang->rt_presentasi = $sidang->ra_presentasi * 0.6;
       } else if ($sidang->rb_presentasi) {
         $sidang->rt_presentasi = $sidang->rb_presentasi * 0.4;
       }
-  
-  
-  
   
       if ($sidang->ra_produk && $sidang->rb_produk) {
         $sidang->rt_produk = $sidang->ra_produk * 0.6 + $sidang->rb_produk * 0.4;

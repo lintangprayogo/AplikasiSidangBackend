@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PelaksanaSidang;
 use Barryvdh\DomPDF\Facade as PDF;
+use App\Models\NilaiSidang;
 
 class SidangProdiController extends Controller
 {
@@ -24,7 +25,6 @@ class SidangProdiController extends Controller
         $response=Sidang::join('sk','sk.id',"=","sidang.sk_id")
         ->join('periode_sidang','periode_sidang.id',"=","sidang.periode_id")
         ->join('mahasiswa','sk.sk_mhs_nim',"=","mahasiswa.mhs_nim")
-    
         ->get();
         return ResponseFormatter::success(
             $response,
@@ -246,9 +246,6 @@ class SidangProdiController extends Controller
       $sidang->rb_produk = $sidang->nilai_penguji2_produk / $jml_penguji;
     }
 
-
-
-
     if ($sidang->ra_laporan && $sidang->rb_laporan) {
       $sidang->rt_laporan = $sidang->ra_laporan * 0.6 + $sidang->rb_laporan * 0.4;
     } else if ($sidang->ra_laporan) {
@@ -256,7 +253,6 @@ class SidangProdiController extends Controller
     } else if ($sidang->rb_laporan) {
       $sidang->rt_laporan = $sidang->rb_laporan * 0.4;
     }
-
 
     if ($sidang->ra_presentasi && $sidang->rb_presentasi) {
 
@@ -266,9 +262,6 @@ class SidangProdiController extends Controller
     } else if ($sidang->rb_presentasi) {
       $sidang->rt_presentasi = $sidang->rb_presentasi * 0.4;
     }
-
-
-
 
     if ($sidang->ra_produk && $sidang->rb_produk) {
       $sidang->rt_produk = $sidang->ra_produk * 0.6 + $sidang->rb_produk * 0.4;
@@ -318,9 +311,25 @@ class SidangProdiController extends Controller
       $pdf =  PDF::loadView('berita-acara', ["sidang" => $sidang]);
       return $pdf->download('pdf_file.pdf');
     }
-      
+    
+    }
 
+    public function getCatatanRevisi($id)
+    {
+        $sidang=Sidang::join('sk','sk.id',"=","sidang.sk_id")
+        ->join('periode_sidang','periode_sidang.id',"=","sidang.periode_id")
+        ->join('mahasiswa','sk.sk_mhs_nim',"=","mahasiswa.mhs_nim")->where("sidang.id","=",$id)
+        ->first();
+        $sidang->tanggal_sidang = $this->tgl_indo($sidang->tanggal_sidang);
+        $sidang->tanggal_revisi = date('Y-m-d', strtotime('+15 day', strtotime($sidang->tanggal_sidang)));
+        $sidang->tanggal_revisi = $this->tgl_indo($sidang->tanggal_revisi);
+        $pembimbing_1 = PelaksanaSidang::where("status", "=", "PEMBIMBING1")->where("sk_id", "=", $sidang->sk_id)
+        ->first();
+        $sidang->pembimbing_1=$pembimbing_1->dosen()->dsn_nama;
         
+        view()->share('sidang', $sidang);
+        $pdf =  PDF::loadView('lembar-revisi', ["sidang" => $sidang]);
+        return $pdf->download('pdf_file.pdf');
     }
 
 
@@ -361,7 +370,6 @@ class SidangProdiController extends Controller
 
     public function plotSidang(Request $request){
         $this->validate($request, ['excel_file' => 'required|max:50000|mimes:xlsx,xls']);
-
         $excel_file=$request->excel_file;
         $jadwalSidangImport=new JadwalSidangImport();
         Excel::import($jadwalSidangImport, $excel_file);
@@ -371,6 +379,26 @@ class SidangProdiController extends Controller
         );
         
     }
+
+    private function indexNilai($nilai){
+
+      if($nilai>=80){
+        return "A";
+      }else if($nilai>70 && $nilai<=80 ){
+          return "AB";
+      }else if($nilai>65 && $nilai<=70 ){
+          return "B";
+      }
+      else if($nilai>60 && $nilai<=65 ){
+          return "BC";
+      } else if($nilai>50 && $nilai<=60 ){
+          return "C";
+      }else if($nilai>40 && $nilai<=50 ){
+          return "D";
+      }else {
+          return "E";
+      }
+  }
 
     public function tgl_indo($tanggal){
         $bulan = array (
@@ -389,7 +417,7 @@ class SidangProdiController extends Controller
         );
         $pecahkan = explode('-', $tanggal);
         
-     
+ 
         return $pecahkan[2] . ' ' . $bulan[ (int)$pecahkan[1] ] . ' ' . $pecahkan[0];
     }
 }
