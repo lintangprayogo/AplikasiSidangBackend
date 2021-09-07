@@ -24,17 +24,12 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['prefix' => 'v1'], function () {
-    Route::resource('sk', SKController::class);
-    Route::get('sidang/prodi/catatan-revisi/{id}', [SidangProdiController::class,"getCatatanRevisi"]);
-    Route::get('berita-acara-sidang/lak/excel', [LakPeriodeSidangController::class,"beritaAcaraSidangExcel"]);
 
-   
+  
     Route::post('/user/signin', [ApiControllerAuth::class, 'signin']);
   
-
-
     Route::middleware(['auth:sanctum'])->group(function () {
-
+        Route::resource('sk', SKController::class);
 
         Route::post('mahasiswa/photo',[ProfileController::class,"updatePhotoMahasiswa"]);
         Route::put('mahasiswa/profile',[ProfileController::class,"updateProfileMahasiswa"]);
@@ -54,6 +49,9 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('formsk/mahasiswa/extend',[MahasiswaFormSKController::class,"extendSK"]);
         Route::post('formsk/mahasiswa/change',[MahasiswaFormSKController::class,"changeSK"]);
         
+        
+        
+        Route::get('sidang/prodi/catatan-revisi/{id}', [SidangProdiController::class,"getCatatanRevisi"]);
         Route::get('formsk/prodi/',[ProdiFormSKController::class,"index"]);
         Route::get('formsk/prodi/accept/{id}',[ProdiFormSKController::class,"formSKAccept"]);
         Route::get('formsk/prodi/reject/{id}',[ProdiFormSKController::class,"formSKReject"]);
@@ -67,8 +65,8 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('prodi/profile',[ProfileController::class,"updateProfileProdi"]);
 
 
-
         Route::resource('daftar-sidang/mahasiswa', MahasiswaPendaftaranSidangController::class);
+        Route::get('sidang/mahasiswa/catatan_revisi/{id}', [SidangMahasiswaController::class,"getCatatanRevisi"]);
         Route::post('sidang/mahasiswa/revisi/{id}', [SidangMahasiswaController::class,"uploadLembarRevisi"]);
         Route::get('sidang/mahasiswa/prediksi', [SidangMahasiswaController::class,"prediksiSidang"]);
         Route::get('sidang/mahasiswa/jurnal/{id}', [SidangMahasiswaController::class,"jurnalDownload"]);
@@ -90,7 +88,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('tugas-akhir-dosen/download/{id}', [TugasAkhirDosenController::class,"downloadSK"]);
         Route::resource('tugas-akhir-dosen', TugasAkhirDosenController::class);
 
-        Route::get('berita-acara-sidang/lak', [LakPeriodeSidangController::class,"beritaAcaraSidangExcel"]);
+        Route::get('berita-acara-sidang/lak/excel', [LakPeriodeSidangController::class,"beritaAcaraSidangExcel"]);
         Route::resource('periode-sidang/lak', LakPeriodeSidangController::class);
         Route::post('lak/photo',[ProfileController::class,"updatePhotoLak"]);
         Route::put('lak/profile',[ProfileController::class,"updateProfileLak"]);

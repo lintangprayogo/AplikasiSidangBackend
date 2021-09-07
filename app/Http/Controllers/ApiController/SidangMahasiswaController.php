@@ -100,14 +100,13 @@ class SidangMahasiswaController extends Controller
       )
       ->where("sk_id", "=", $sk->id)->where("sidang.id", "=", $id)->first();
   
+    $sidang->tanggal_revisi = date('Y-m-d', strtotime('+15 day', strtotime($sidang->tanggal_sidang)));
+
     $pembimbing_1 = PelaksanaSidang::where("status", "=", "PEMBIMBING1")->where("sk_id", "=", $sidang->sk_id)
       ->first();
     $pembimbing_2 = PelaksanaSidang::where("status", "=", "PEMBIMBING2")->where("sk_id", "=", $sidang->sk_id)
       ->first();
-
-
-
-
+      
     $penguji_1 = PelaksanaSidang::where("status", "=", "PENGUJI1")->where("sk_id", "=", $sidang->sk_id)
       ->first();
     $penguji_2 = PelaksanaSidang::where("status", "=", "PENGUJI2")->where("sk_id", "=", $sidang->sk_id)
@@ -116,8 +115,6 @@ class SidangMahasiswaController extends Controller
 
     $jml_pembimbing = 0;
     $jml_penguji = 0;
-
-
 
 
     if ($pembimbing_1) {
@@ -307,7 +304,6 @@ class SidangMahasiswaController extends Controller
     $sidang->na_produk = number_format($sidang->na_produk, 2);
     
      
-    $sidang->tanggal_revisi = date('Y-m-d', strtotime('+15 day', strtotime($sidang->tanggal_sidang)));
     $sidang->index_nilai = $this->indexNilai($sidang->na_total);
 
     if ($request->wantsJson()) {
@@ -339,6 +335,22 @@ class SidangMahasiswaController extends Controller
    return Storage::download('lembar_revisi/'.$sidang->revisi);
 }
 
+public function getCatatanRevisi($id)
+{
+    $sidang=Sidang::join('sk','sk.id',"=","sidang.sk_id")
+    ->join('periode_sidang','periode_sidang.id',"=","sidang.periode_id")
+    ->join('mahasiswa','sk.sk_mhs_nim',"=","mahasiswa.mhs_nim")->where("sidang.id","=",$id)
+    ->first();
+    $sidang->tanggal_sidang = $this->tgl_indo($sidang->tanggal_sidang);
+    $sidang->tanggal_revisi = date('Y-m-d', strtotime('+15 day', strtotime($sidang->tanggal_sidang)));
+    $sidang->tanggal_revisi = $this->tgl_indo($sidang->tanggal_revisi);
+    $pembimbing_1 = PelaksanaSidang::where("status", "=", "PEMBIMBING1")->where("sk_id", "=", $sidang->sk_id)
+    ->first();
+    $sidang->pembimbing_1=$pembimbing_1->dosen()->dsn_nama;
+    view()->share('sidang', $sidang);
+    $pdf =  PDF::loadView('lembar-revisi', ["sidang" => $sidang]);
+    return $pdf->download('pdf_file.pdf');
+}
 
 
 

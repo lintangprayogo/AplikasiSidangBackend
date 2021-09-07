@@ -131,7 +131,7 @@ class LakPeriodeSidangController extends Controller
         );
     }
 
-    public function beritaAcaraSidangExcel(){
-        return Excel::download(new BeritaAcaraExport, 'berita_acara.xlsx');
+    public function beritaAcaraSidangExcel(Request $request){
+        return Excel::download(new BeritaAcaraExport($request->tanggal_mulai,$request->tanggal_akhir), 'berita_acara.xlsx');
     }
 }
